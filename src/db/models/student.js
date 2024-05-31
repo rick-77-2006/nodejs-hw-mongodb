@@ -1,6 +1,6 @@
-import { model, Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-const studentsSchema = new Schema(
+const studentShema = new Schema(
   {
     name: {
       type: String,
@@ -25,10 +25,7 @@ const studentsSchema = new Schema(
       default: false,
     },
   },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
+  { timestamps: true, versionKey: false },
 );
 
-export const StudentsCollection = model('students', studentsSchema);
+export const StudentsCollection = model('student', studentShema);
