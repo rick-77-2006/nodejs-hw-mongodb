@@ -1,17 +1,27 @@
 import express from 'express';
+import { env } from './utils/env.js';
+import { ENV_VARS } from './constants/constantsApp.js';
 import cors from 'cors';
 import pino from 'pino-http';
-import { env } from './utils/env.js';
-import { ENV_VARS } from './constants/index.js';
-import { getAllStudents, getStudentById } from './services/students.js';
-import mongoose from 'mongoose';
+import { errorHandler } from './middleware/errorHandler.js';
+import { notFoundHandler } from './middleware/notFoundHandler.js';
+import router from './routers/index.js';
+import cookieParser from 'cookie-parser';
 
-const PORT = env(ENV_VARS.PORT, 3000);
 
-export const startServer = () => {
+const PORT = env(ENV_VARS, 3000);
+
+export const setupServer = () => {
   const app = express();
 
-  app.use(express.json());
+  app.use(
+    express.json({
+      type: ['application/json', 'application/vnd.api+json'],
+      limit: '250kb',
+    }),
+  );
+
+  app.use(cookieParser());
   app.use(cors());
   app.use(
     pino({
@@ -21,37 +31,18 @@ export const startServer = () => {
     }),
   );
 
-  app.get('/students', async (req, res) => {
-    const students = await getAllStudents();
-    res.status(200).json({ data: students });
-  });
-
-  app.get('/students/:studentId', async (req, res) => {
-    const { studentId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(studentId)) {
-      return res.status(400).json({
-        data: 'ID is not valid',
-      });
-    }
-    const student = await getStudentById(studentId);
-    res.status(200).json({ data: student });
-  });
-
-  // Not Found middleware
-  app.use('*', (req, res, next) => {
-    res.status(404).json({
-      message: 'Not Found!',
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Contact App is Running',
     });
   });
 
-  // Error Handler
-  app.use((err, req, res, next) => {
-    res.status(500).json({
-      message: 'Something went wrong',
-    });
-  });
+  app.use(router);
+
+  app.use('*', notFoundHandler);
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
   });
 };
