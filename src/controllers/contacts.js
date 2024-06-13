@@ -2,7 +2,8 @@ import {
   getAllContacts,
   getContactById,
   createContact,
-  deleteContact, updateContact,
+  deleteContact,
+  updateContact,
 } from '../services/contacts.js';
 import createHttpError from 'http-errors';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
@@ -20,7 +21,7 @@ export const getContactsController = async (req, res) => {
     sortBy,
     sortOrder,
     filter,
-    user
+    user,
   });
 
   res.json({
@@ -63,9 +64,14 @@ export const upsertContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const userId = req.user._id;
 
-  const updatedContact = await updateContact(contactId, req.body, {
-    upsert: true,
-  }, userId);
+  const updatedContact = await updateContact(
+    contactId,
+    req.body,
+    {
+      upsert: true,
+    },
+    userId,
+  );
 
   if (!updatedContact) {
     next(createHttpError(404, 'Contact not found'));
@@ -108,4 +114,3 @@ export const deleteContactController = async (req, res, next) => {
   }
   res.status(204).send();
 };
-

@@ -3,13 +3,13 @@ import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import { SORT_ORDER } from '../constants/constantsApp.js';
 
 export const getAllContacts = async ({
-                                       page = 1,
-                                       perPage = 10,
-                                       sortOrder = SORT_ORDER.ASC,
-                                       sortBy = '_id',
-                                       filter = {},
-                                       user = null,
-                                     }) => {
+  page = 1,
+  perPage = 10,
+  sortOrder = SORT_ORDER.ASC,
+  sortBy = '_id',
+  filter = {},
+  user = null,
+}) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
@@ -39,19 +39,26 @@ export const getAllContacts = async ({
 };
 
 export const getContactById = async (contactId, userId) => {
-  const contact = await ContactsCollection.findById(contactId).where({ userId: userId });
+  const contact = await ContactsCollection.findById(contactId).where({
+    userId: userId,
+  });
   return contact;
 };
 
 export const createContact = async (payload, userId) => {
   const contact = await ContactsCollection.create({
     userId,
-   ...payload,
+    ...payload,
   });
   return contact;
 };
 
-export const updateContact = async (contactId, payload, options = {}, userId) => {
+export const updateContact = async (
+  contactId,
+  payload,
+  options = {},
+  userId,
+) => {
   const rawResult = await ContactsCollection.findOneAndUpdate(
     { _id: contactId },
     payload,
