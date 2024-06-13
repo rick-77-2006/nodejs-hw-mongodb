@@ -9,10 +9,10 @@
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script>
-      const booksRequest = axios.get('http://localhost:3000/')
+      const booksRequest = axios.get('http://localhost:3000/');
       booksRequest
-        .then(({data}) => console.log(data))
-        .catch((error) => console.log(error.message))
+        .then(({ data }) => console.log(data))
+        .catch((error) => console.log(error.message));
     </script>
   </body>
 </html>
